@@ -226,16 +226,23 @@ KE_total = sum(KE_raw);
 % Normalized Signature (This is what you match against in real-time)
 KE_Signature = KE_raw / KE_total; 
 % 3. Define Entry Structure
-new_entry.Fault_Location    = Tripped_Line; 
+if isempty(best_MOD_group)
+new_entry.Fault_Location    = Fault_Location; 
+new_entry.MOD_Generators    = [ 0 ]; 
+new_entry.KE_Signature      = KE_Signature;
+new_entry.Vcr               = Vcr_candidate;
+else
+new_entry.Fault_Location    = Fault_Location; 
 new_entry.MOD_Generators    = best_MOD_group; 
 new_entry.KE_Signature      = KE_Signature;
 new_entry.Vcr               = best_Vcr;
+end
 % 3. Display Data to be Saved
 fprintf('\n--- Saving Best Result to Database ---\n');
 fprintf('Fault Loc: %s\n', new_entry.Fault_Location);
 fprintf('Best MOD: Gen [ %s]\n', num2str(best_MOD_group'));
 fprintf('KE Signature: [ %.4f  %.4f  %.4f ]\n', KE_Signature');
-fprintf('Critical Energy (Vcr): %.4f\n', best_Vcr);
+fprintf('Critical Energy (Vcr): %.4f\n', new_entry.Vcr);
 
 % 4. Load & Append
 if exist(db_file, 'file')
